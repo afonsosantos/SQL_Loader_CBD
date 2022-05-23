@@ -1,39 +1,41 @@
 import os
 
-TABLE_NAMES = ["AREA_ATUACAO", "CIRURGIA", "CONSULTA", "ENFERMEIRO", "ESTADO_PACIENTE", "FUNCIONARIO",
-               "MEDICO", "MEDICO_CIRURGIA", "PACIENTE", "PESSOA", "PROCESSO", "RELATORIO", "TELEFONE",
-               "TIPO_CIRURGIA", "USER_EXCEPTION"]
+TABLE_NAMES = [
+    "AREA_ATUACAO", "CIRURGIA", "CONSULTA", "ENFERMEIRO", "ESTADO_PACIENTE", "FUNCIONARIO",
+    "MEDICO", "MEDICO_CIRURGIA", "PACIENTE", "PESSOA", "PROCESSO", "RELATORIO", "TELEFONE",
+    "TIPO_CIRURGIA", "USER_EXCEPTION", "ENCRYPTION_KEY"]
 
 COLUMN_NAMES = [
     ["id_area_atuacao", "descricao"],
-    ["id_cirurgia", "id_processo", "id_relatorio", "id_tipo_cirurgia", "dta_realizacao"],
-    ["id_consulta", "id_processo", "nif_funcionario", "id_relatorio", "id_estado_paciente", "dta_realizacao"],
+    ["id_cirurgia", "id_processo", "id_relatorio", "id_tipo_cirurgia", "dta_realizacao DATE 'YY.MM.DD'"],
+    ["id_consulta", "id_processo", "nif_funcionario", "id_relatorio", "id_estado_paciente", "dta_realizacao DATE 'YY.MM.DD'"],
     ["nif"],
     ["id_estado_paciente", "descricao"],
     ["nif"],
     ["nif", "id_area_atuacao", "cedula"],
     ["nif", "id_cirurgia"],
     ["nif", "n_utente_saude"],
-    ["nif", "prim_nome", "ult_nome", "morada", "dta_nasc"],
-    ["id_processo", "nif", "id_area_atuacao", "id_estado_paciente", "dta_inicio", "dta_alta"],
+    ["nif", "prim_nome", "ult_nome", "morada", "dta_nasc DATE 'YY.MM.DD'"],
+    ["id_processo", "nif", "id_area_atuacao", "id_estado_paciente", "dta_inicio DATE 'YY.MM.DD'", "dta_alta DATE 'YY.MM.DD' NULLIF dta_alta = 'NULL'"],
     ["id_relatorio", "nif", "texto", "categoria"],
     ["nif", "telefone"],
     ["id_tipo_cirurgia", "id_area_atuacao", "nome"],
-    ["code", "name", "errm"]
+    ["code", "name", "errm"],
+    ["key"]
 ]
 
 BASE_CTL_FILE = """load data into table {0}
-insert
+append
 fields terminated by ","
 (
 {1}
 )
 """
 
-BASE_PAR_FILE = """userid=userOptim/userOptim
+BASE_PAR_FILE = """userid=PROJETO/Projeto_22
 control={0}.ctl
 data=../csv_data/{1}.csv
-direct=true
+direct=false
 """
 
 
@@ -62,7 +64,7 @@ def main():
         current_table_columns = ", ".join(column_name)
 
         current_ctl_file = BASE_CTL_FILE.format(table_name, current_table_columns)
-        current_par_file = BASE_PAR_FILE.format(table_name.lower(), table_name.lower() + "_data")
+        current_par_file = BASE_PAR_FILE.format(table_name.lower(), table_name.lower() + "_data_table")
 
         write_table_file(current_par_file, ".par", table_name)
         write_table_file(current_ctl_file, ".ctl", table_name)
